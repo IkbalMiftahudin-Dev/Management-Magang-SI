@@ -7,6 +7,7 @@ use App\Http\Controllers\Mahasiswa\BerandaController;
 use App\Http\Controllers\Mahasiswa\PendataanController;
 use App\Http\Controllers\ManageLowonganController;
 use App\Http\Controllers\PrivateFileController;
+use App\Http\Controllers\VerifikasiProdiController;
 use Illuminate\Support\Facades\Route;
 
 // Public SSO protocol endpoints & post-logout page (root "/" requires authentication).
@@ -59,7 +60,13 @@ Route::middleware(['auth', 'sso.session'])->group(function (): void {
         ->name('staff.')
         ->middleware('role:Staff_Kaprodi')
         ->group(function (): void {
-            Route::get('/verifikasi', [DashboardShellController::class, 'staff'])->name('verifikasi.index');
+            Route::get('/verifikasi', [VerifikasiProdiController::class, 'index'])->name('verifikasi.index');
+            Route::get('/verifikasi/{pendataan}', [VerifikasiProdiController::class, 'show'])->name('verifikasi.show');
+            Route::patch('/verifikasi/{pendataan}/status', [VerifikasiProdiController::class, 'updateStatus'])->name('verifikasi.status');
+            Route::patch('/verifikasi/{pendataan}/pembimbing-lapangan', [VerifikasiProdiController::class, 'assignPembimbingLapangan'])->name('verifikasi.pembimbing-lapangan');
+            Route::post('/verifikasi/{pendataan}/generate-sk', [VerifikasiProdiController::class, 'generateSk'])->name('verifikasi.generate-sk');
+            Route::post('/verifikasi/generate-sk-bulk', [VerifikasiProdiController::class, 'generateBulkSk'])->name('verifikasi.generate-sk-bulk');
+
             Route::get('/lowongan', [ManageLowonganController::class, 'index'])->name('lowongan.index');
             Route::post('/lowongan', [ManageLowonganController::class, 'store'])->name('lowongan.store');
             Route::put('/lowongan/{lowongan}', [ManageLowonganController::class, 'update'])->name('lowongan.update');
@@ -70,7 +77,16 @@ Route::middleware(['auth', 'sso.session'])->group(function (): void {
         ->name('kaprodi.')
         ->middleware('role:Kaprodi')
         ->group(function (): void {
-            Route::get('/verifikasi', [DashboardShellController::class, 'kaprodi'])->name('verifikasi.index');
+            Route::get('/verifikasi', [VerifikasiProdiController::class, 'index'])->name('verifikasi.index');
+            Route::get('/verifikasi/{pendataan}', [VerifikasiProdiController::class, 'show'])->name('verifikasi.show');
+            Route::patch('/verifikasi/{pendataan}/status', [VerifikasiProdiController::class, 'updateStatus'])->name('verifikasi.status');
+            Route::patch('/verifikasi/{pendataan}/pembimbing-lapangan', [VerifikasiProdiController::class, 'assignPembimbingLapangan'])->name('verifikasi.pembimbing-lapangan');
+            Route::post('/verifikasi/{pendataan}/generate-sk', [VerifikasiProdiController::class, 'generateSk'])->name('verifikasi.generate-sk');
+            Route::post('/verifikasi/generate-sk-bulk', [VerifikasiProdiController::class, 'generateBulkSk'])->name('verifikasi.generate-sk-bulk');
+            Route::post('/sk/{dokumenSk}/approve', [VerifikasiProdiController::class, 'approveSk'])
+                ->middleware('sso.fresh')
+                ->name('sk.approve');
+
             Route::get('/lowongan', [ManageLowonganController::class, 'index'])->name('lowongan.index');
             Route::post('/lowongan', [ManageLowonganController::class, 'store'])->name('lowongan.store');
             Route::put('/lowongan/{lowongan}', [ManageLowonganController::class, 'update'])->name('lowongan.update');

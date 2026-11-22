@@ -3,6 +3,10 @@
 use App\Http\Controllers\Auth\SsoController;
 use App\Http\Controllers\DashboardShellController;
 use App\Http\Controllers\HomeRedirectController;
+use App\Http\Controllers\Mahasiswa\BerandaController;
+use App\Http\Controllers\Mahasiswa\PendataanController;
+use App\Http\Controllers\ManageLowonganController;
+use App\Http\Controllers\PrivateFileController;
 use Illuminate\Support\Facades\Route;
 
 // Public SSO protocol endpoints & post-logout page (root "/" requires authentication).
@@ -23,11 +27,25 @@ Route::middleware(['auth', 'sso.session'])->group(function (): void {
 
     Route::post('/logout', [SsoController::class, 'logout'])->name('logout');
 
+    // Policy-protected private file streaming endpoints (never exposed in public/storage).
+    Route::prefix('files')->name('files.')->group(function (): void {
+        Route::get('/pendataan/{pendataan}/{slot}', [PrivateFileController::class, 'pendataanSlot'])->name('pendataan.slot');
+        Route::get('/logbook/{logbook}', [PrivateFileController::class, 'logbook'])->name('logbook');
+        Route::get('/sk/{dokumenSk}', [PrivateFileController::class, 'dokumenSk'])->name('sk');
+    });
+
     Route::prefix('mahasiswa')
         ->name('mahasiswa.')
         ->middleware('role:Mahasiswa')
         ->group(function (): void {
-            Route::get('/beranda', [DashboardShellController::class, 'mahasiswa'])->name('beranda');
+            Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
+            Route::get('/lowongan/{lowongan}', [BerandaController::class, 'show'])->name('lowongan.show');
+
+            Route::get('/pendataan', [PendataanController::class, 'show'])->name('pendataan.show');
+            Route::post('/pendataan/step-1', [PendataanController::class, 'saveStepOne'])->name('pendataan.step1');
+            Route::post('/pendataan/step-2', [PendataanController::class, 'saveStepTwo'])->name('pendataan.step2');
+            Route::post('/pendataan/step-3', [PendataanController::class, 'saveStepThree'])->name('pendataan.step3');
+            Route::post('/pendataan/step-4', [PendataanController::class, 'submitStepFour'])->name('pendataan.step4');
         });
 
     Route::prefix('dosen')
@@ -42,6 +60,10 @@ Route::middleware(['auth', 'sso.session'])->group(function (): void {
         ->middleware('role:Staff_Kaprodi')
         ->group(function (): void {
             Route::get('/verifikasi', [DashboardShellController::class, 'staff'])->name('verifikasi.index');
+            Route::get('/lowongan', [ManageLowonganController::class, 'index'])->name('lowongan.index');
+            Route::post('/lowongan', [ManageLowonganController::class, 'store'])->name('lowongan.store');
+            Route::put('/lowongan/{lowongan}', [ManageLowonganController::class, 'update'])->name('lowongan.update');
+            Route::delete('/lowongan/{lowongan}', [ManageLowonganController::class, 'destroy'])->name('lowongan.destroy');
         });
 
     Route::prefix('kaprodi')
@@ -49,6 +71,10 @@ Route::middleware(['auth', 'sso.session'])->group(function (): void {
         ->middleware('role:Kaprodi')
         ->group(function (): void {
             Route::get('/verifikasi', [DashboardShellController::class, 'kaprodi'])->name('verifikasi.index');
+            Route::get('/lowongan', [ManageLowonganController::class, 'index'])->name('lowongan.index');
+            Route::post('/lowongan', [ManageLowonganController::class, 'store'])->name('lowongan.store');
+            Route::put('/lowongan/{lowongan}', [ManageLowonganController::class, 'update'])->name('lowongan.update');
+            Route::delete('/lowongan/{lowongan}', [ManageLowonganController::class, 'destroy'])->name('lowongan.destroy');
         });
 
     Route::prefix('admin')
@@ -56,5 +82,9 @@ Route::middleware(['auth', 'sso.session'])->group(function (): void {
         ->middleware('role:Admin')
         ->group(function (): void {
             Route::get('/dashboard', [DashboardShellController::class, 'admin'])->name('dashboard');
+            Route::get('/lowongan', [ManageLowonganController::class, 'index'])->name('lowongan.index');
+            Route::post('/lowongan', [ManageLowonganController::class, 'store'])->name('lowongan.store');
+            Route::put('/lowongan/{lowongan}', [ManageLowonganController::class, 'update'])->name('lowongan.update');
+            Route::delete('/lowongan/{lowongan}', [ManageLowonganController::class, 'destroy'])->name('lowongan.destroy');
         });
 });

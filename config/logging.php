@@ -135,6 +135,14 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'sso' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sso.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'max_files' => 30,
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

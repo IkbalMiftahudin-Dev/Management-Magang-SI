@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -39,6 +40,36 @@ class User extends Authenticatable
             'role' => UserRole::class,
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Academic student profile linked to this account when role is Mahasiswa.
+     *
+     * @return HasOne<Mahasiswa, $this>
+     */
+    public function mahasiswa(): HasOne
+    {
+        return $this->hasOne(Mahasiswa::class);
+    }
+
+    /**
+     * Academic lecturer profile linked to this account when role is Dosen or Kaprodi.
+     *
+     * @return HasOne<Dosen, $this>
+     */
+    public function dosen(): HasOne
+    {
+        return $this->hasOne(Dosen::class);
+    }
+
+    /**
+     * Internship vacancies created by this user.
+     *
+     * @return HasMany<LowonganMagang, $this>
+     */
+    public function lowonganMagangs(): HasMany
+    {
+        return $this->hasMany(LowonganMagang::class, 'created_by');
     }
 
     /**

@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Data\SsoUserClaims;
 use App\Enums\UserRole;
+use App\Models\Dosen;
+use App\Models\Mahasiswa;
 use App\Models\User;
 
 class SsoUserSyncService
 {
     /**
-     * Synchronize or provision a local User account from verified JWT claims (keyed by sso_sub).
+     * Synchronize or provision a local User account and linked academic profile from verified JWT claims.
      */
     public function syncFromClaims(SsoUserClaims $claims): User
     {
@@ -23,7 +25,7 @@ class SsoUserSyncService
     }
 
     /**
-     * Synchronize a local User account from a live /api/sso/userinfo payload.
+     * Synchronize a local User account and linked academic profile from a live /api/sso/userinfo payload.
      *
      * @param  array{sub: string, name: string, email: string, nip: ?string, role: UserRole}  $userInfo
      */
@@ -70,6 +72,67 @@ class SsoUserSyncService
 
         $user->save();
 
+        $this->syncAcademicProfile($user);
+
         return $user;
+    }
+
+    /**
+     * Automatically link or provision Mahasiswa / Dosen profiles on SSO login.
+     */
+    private function syncAcademicProfile(User $user): void
+    {
+        if ($user->role === UserRole::Mahasiswa) {
+            $mahasiswa = Mahasiswa::query()->where('user_id', $user->id)->first();
+
+            if ($mahasiswa === null && $user->identifier_number !== null) {
+                $mahasiswa = Mahasiswa::query()
+                    ->whereNull('user_id')
+                    ->where('nim', $user->identifier_number)
+                    ->first();
+            }
+
+            if ($mahasiswa === null) {
+                $mahasiswa = new Mahasiswa;
+            }
+
+            $mahasiswa->forceFill([
+                'user_id' => $user->id,
+                'nim' => $user->identifier_number ?? $mahasiswa->nim,
+                'nama' => $user->name,
+                'prodi' => $mahasiswa->prodi ?: 'Rekayasa Perangkat Lunak',
+            ])->save();
+
+            return;
+        }
+
+        if (in_array($user->role, [UserRole::Dosen, UserRole::Kaprodi], true)) {
+            $dosen = Dosen::query()->where('user_id', $user->id)->first();
+
+            if ($dosen === null && $user->identifier_number !== null) {
+                $dosen = Dosen::query()
+                    ->whereNull('user_id')
+                    ->where('nip', $user->identifier_number)
+                    ->first();
+            }
+
+            if ($dosen === null && $user->email !== '') {
+                $dosen = Dosen::query()
+                    ->whereNull('user_id')
+                    ->where('email', $user->email)
+                    ->first();
+            }
+
+            if ($dosen === null) {
+                $dosen = new Dosen;
+            }
+
+            $dosen->forceFill([
+                'user_id' => $user->id,
+                'nip' => $user->identifier_number ?? $dosen->nip,
+                'nama' => $user->name,
+                'email' => $user->email,
+            ])->save();
+        }
     }
 }

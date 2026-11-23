@@ -69,12 +69,8 @@ class PendataanController extends Controller
 
         $user = $request->user();
 
-        return view('dashboard.shell', [
+        return view('mahasiswa.pendataan', [
             'user' => $user,
-            'pageTitle' => 'Pendataan Magang',
-            'pageDescription' => 'Lengkapi informasi program, LOA, dan pemetaan mata kuliah konversi.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
             'pendataan' => $pendataan,
             'dosens' => $dosens,
             'mataKuliahs' => $mataKuliahs,

@@ -42,18 +42,12 @@ class PenilaianController extends Controller
             return response()->json($payload);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Penilaian & SK',
-            'pageDescription' => 'Kelola validasi logbook bimbingan dan penilaian konversi mata kuliah yang diampu.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('dosen.penilaian-index', [
             'courses' => $payload['courses'],
             'selectedCourse' => $payload['selected_course'],
             'metrics' => $payload['metrics'],
             'submissions' => $payload['submissions'],
+            'search' => $search,
         ]);
     }
 
@@ -78,14 +72,7 @@ class PenilaianController extends Controller
             return response()->json(['data' => $konversi]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Penilaian '.($konversi->pendataanMagang?->mahasiswa?->nama ?? 'Mahasiswa'),
-            'pageDescription' => ($konversi->mataKuliah?->kode_mk ?? '').' · '.($konversi->mataKuliah?->nama_mk ?? ''),
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('dosen.penilaian-detail', [
             'konversi' => $konversi,
         ]);
     }

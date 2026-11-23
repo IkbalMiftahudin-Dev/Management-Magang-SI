@@ -13,3 +13,15 @@
     --color-brand-accent: #FFD166;
     --color-brand-surface: #F2F7FF;
 }
+
+@layer base {
+    body {
+        font-family: var(--font-sans);
+        background-color: #F2F7FF;
+        color: #0F172A;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+        font-family: var(--font-heading);
+    }
+}

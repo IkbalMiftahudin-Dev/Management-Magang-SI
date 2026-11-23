@@ -41,14 +41,7 @@ class LogbookController extends Controller
             ]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Logbook Kegiatan',
-            'pageDescription' => 'Catat progres kegiatan mingguan/bulanan dan pantau validasi dosen pembimbing.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('mahasiswa.logbook', [
             'pendataan' => $pendataan,
             'logbooks' => $logbooks,
         ]);

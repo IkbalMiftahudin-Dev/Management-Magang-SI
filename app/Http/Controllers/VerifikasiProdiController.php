@@ -50,17 +50,11 @@ class VerifikasiProdiController extends Controller
             ]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Verifikasi & Penilaian',
-            'pageDescription' => 'Kelola verifikasi pendataan, plotting pembimbing lapangan, dan otomatisasi dokumen SK.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('prodi.verifikasi', [
             'rekap' => $rekap,
             'metrics' => $metrics,
             'dosens' => $dosens,
+            'search' => $search,
         ]);
     }
 
@@ -85,14 +79,7 @@ class VerifikasiProdiController extends Controller
             return response()->json(['data' => $pendataan]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Detail Pendataan Mahasiswa',
-            'pageDescription' => ($pendataan->mahasiswa?->nama ?? 'Mahasiswa').' · '.$pendataan->nama_instansi,
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('prodi.verifikasi-detail', [
             'pendataan' => $pendataan,
         ]);
     }

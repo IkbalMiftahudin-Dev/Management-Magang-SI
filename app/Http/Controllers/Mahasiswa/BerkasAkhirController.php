@@ -48,14 +48,7 @@ class BerkasAkhirController extends Controller
             ]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Pengumpulan Berkas Akhir',
-            'pageDescription' => 'Unggah 5 berkas wajib dan 1 sertifikat opsional (PDF maksimal 10 MB per berkas).',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('mahasiswa.berkas-akhir', [
             'pendataan' => $pendataan,
             'berkas' => $berkas,
         ]);

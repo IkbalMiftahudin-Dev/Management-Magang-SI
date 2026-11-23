@@ -41,15 +41,10 @@ class BerandaController extends Controller
             ]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Beranda Portal Magang',
-            'pageDescription' => 'Portal informasi lowongan, pendataan pasca-diterima, logbook digital, dan pengumpulan berkas akhir.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('mahasiswa.beranda', [
             'lowongans' => $lowongans,
+            'search' => $search,
+            'sumber' => $sumber,
         ]);
     }
 
@@ -66,14 +61,7 @@ class BerandaController extends Controller
             return response()->json(['data' => $lowongan]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => $lowongan->judul_lowongan,
-            'pageDescription' => $lowongan->nama_instansi.' · '.$lowongan->lokasi_mode,
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('mahasiswa.lowongan-show', [
             'lowongan' => $lowongan,
         ]);
     }

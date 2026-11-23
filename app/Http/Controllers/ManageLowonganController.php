@@ -42,16 +42,10 @@ class ManageLowonganController extends Controller
             ]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Kelola Lowongan',
-            'pageDescription' => 'Publikasikan dan perbarui informasi lowongan magang untuk mahasiswa.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('prodi.lowongan', [
             'lowongans' => $lowongans,
             'metrics' => $metrics,
+            'search' => $search,
             'dosens' => Dosen::query()->orderBy('nama')->get(),
         ]);
     }

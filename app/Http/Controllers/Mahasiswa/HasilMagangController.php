@@ -44,14 +44,7 @@ class HasilMagangController extends Controller
             ]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'SK & Hasil Konversi Nilai',
-            'pageDescription' => 'Unduh dokumen SK sah dan lihat nilai konversi mata kuliah yang telah dipublikasikan.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('mahasiswa.hasil', [
             'pendataan' => $pendataan,
             'approvedSks' => $approvedSks,
             'publishedGrades' => $publishedGrades,

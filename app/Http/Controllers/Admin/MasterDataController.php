@@ -47,14 +47,7 @@ class MasterDataController extends Controller
             return response()->json(['summary' => $summary]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Dashboard Tata Kelola Sistem',
-            'pageDescription' => 'Pengelolaan master data mata kuliah konversi, lowongan, monitoring rekap, dan audit trail.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('admin.dashboard', [
             'summary' => $summary,
         ]);
     }
@@ -72,15 +65,9 @@ class MasterDataController extends Controller
             return response()->json(['data' => $courses]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Master Mata Kuliah & Rubrik',
-            'pageDescription' => 'Kelola mata kuliah konversi MBKM beserta komponen rubrik berbobot 100%.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('admin.mata-kuliah', [
             'courses' => $courses,
+            'dosens' => Dosen::query()->orderBy('nama')->get(),
         ]);
     }
 
@@ -172,14 +159,7 @@ class MasterDataController extends Controller
             return response()->json(['data' => $logs]);
         }
 
-        $user = $request->user();
-
-        return view('dashboard.shell', [
-            'user' => $user,
-            'pageTitle' => 'Audit Trail Sistem',
-            'pageDescription' => 'Pantau seluruh jejak aktivitas autentikasi SSO, verifikasi, pengesahan SK, dan penilaian.',
-            'ssoSession' => $this->sessionManager->findForRequest($request, $user),
-            'permissions' => $user->role->permissions(),
+        return view('admin.audit-logs', [
             'logs' => $logs,
         ]);
     }
